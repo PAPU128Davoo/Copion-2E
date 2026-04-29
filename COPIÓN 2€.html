@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COPIÓN NIVEL DIOS - LEGENDARY</title>
+    <style>
+        @import url('https://googleapis.com');
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Press Start 2P',cursive;text-align:center;background:#050510;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+
+        #juego{background:linear-gradient(145deg,#1a1a2e,#16213e);max-width:700px;width:95%;padding:25px;border:5px solid #e94560;border-radius:20px;position:relative;box-shadow:0 0 50px rgba(233,69,96,0.5)}
+
+        #pantallaInicio{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(26,26,46,0.98);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:15px}
+
+        /* STATS MEJORADOS */
+        #stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px;background:rgba(0,0,0,0.5);padding:15px;border-radius:12px;border:2px solid #444}
+        .stat-box p {font-size:10px; color:#e94560; margin-bottom:8px; font-weight:bold}
+        .stat {font-size:16px; color:#ffd700; text-shadow:2px 2px #000}
+
+        #mesa{background:linear-gradient(#8B4513,#A0522D);height:320px;margin:15px 0;position:relative;border:5px solid #4d260b;border-radius:15px;box-shadow:inset 0 0 50px rgba(0,0,0,0.5)}
+        #profe{font-size:65px;top:20px;position:absolute;left:50%;transform:translateX(-50%);z-index:10;transition: 0.1s}
+
+        #contenedorSospecha{position:absolute;top:95px;left:50%;transform:translateX(-50%);width:150px;height:18px;background:#222;border:3px solid #fff;border-radius:10px;display:none;z-index:11;overflow:hidden}
+        #barraSospecha{width:0%;height:100%;background:#00ff00;box-shadow: 0 0 10px rgba(0,255,0,0.5)}
+
+        button{font-family:'Press Start 2P',cursive;font-size:12px;padding:15px;margin:8px;border:4px solid #e94560;border-radius:10px;background:#16213e;color:#e94560;cursor:pointer;transition:0.2s}
+        button:hover:not(:disabled){transform:scale(1.05);background:#e94560;color:#fff}
+        .seleccionado{background:#e94560 !important;color:#fff !important;box-shadow:0 0 20px #e94560}
+
+        #controlesActivos{display:none;gap:15px;margin-top:15px}
+        #copiarBtn{flex-grow:3;font-size:18px;background:#e94560;color:white;text-shadow:2px 2px #000}
+        #pausaBtn{flex-grow:1;background:#ffd700;color:#000;border-color:#b8941f}
+
+        .mirando{transform:translateX(-50%) scale(1.4) rotate(10deg)!important;filter:drop-shadow(0 0 25px red)}
+        #chuleta{font-size:50px;position:absolute;bottom:90px;left:50%;transform:translateX(-50%);display:none}
+        #alumno{font-size:65px;position:absolute;bottom:15px;left:50%;transform:translateX(-50%)}
+
+        #diploma{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.95);z-index:1000;align-items:center;justify-content:center;padding:20px}
+        #diplomaCont{background:#fff;color:#000;padding:40px;border:15px double #d4af37;border-radius:10px;text-align:center;font-family:'Bangers',cursive}
+    </style>
+</head>
+<body>
+
+<div id="juego">
+    <div id="pantallaInicio">
+        <h2 style="color:#ffd700; font-size:22px; margin-bottom:30px;">DIFICULTAD</h2>
+        <div id="selectorDificultad">
+            <button class="dificultad" onclick="setDificultad('facil', this)">FÁCIL</button>
+            <button class="dificultad" onclick="setDificultad('medio', this)">MEDIO</button>
+            <button class="dificultad" onclick="setDificultad('dificil', this)">DIFÍCIL</button>
+        </div>
+        <button id="btnPlay" onclick="iniciarJuego()" style="display:none; margin-top:40px; border-color:#00ff00; color:#00ff00; font-size:18px;">¡A COPIAR!</button>
+    </div>
+
+    <div id="stats">
+        <div class="stat-box"><p>PUNTOS</p><div class="stat" id="puntos">0</div></div>
+        <div class="stat-box"><p>VIDAS</p><div class="stat" id="vidas">3</div></div>
+        <div class="stat-box"><p>TIME</p><div class="stat" id="tiempo">60</div></div>
+        <div class="stat-box"><p>COMBO</p><div class="stat" id="combo">x1</div></div>
+        <div class="stat-box"><p>RANGO</p><div class="stat" id="rango">---</div></div>
+    </div>
+
+    <div id="mesa">
+        <div id="profe">👨‍🏫</div>
+        <div id="contenedorSospecha"><div id="barraSospecha"></div></div>
+        <div id="chuleta">📄</div>
+        <div id="alumno">🧑‍🎓</div>
+    </div>
+
+    <div id="mensaje" style="font-size:12px; height:30px; color:#ffd700;">¡ELIGE NIVEL PARA EMPEZAR!</div>
+
+    <div id="controlesActivos">
+        <button id="copiarBtn" onmousedown="empezarCopiar()" onmouseup="pararCopiar()" ontouchstart="empezarCopiar()" ontouchend="pararCopiar()">COPIAR [ESPACIO]</button>
+        <button id="pausaBtn" onclick="togglePausa()">PAUSA</button>
+    </div>
+</div>
+
+<div id="diploma">
+    <div id="diplomaCont">
+        <h1 style="font-size:50px; color:#d4af37;">CERTIFICADO OFICIAL</h1>
+        <p style="font-size:25px; margin:20px 0;">¡ERES UN COPIÓN NIVEL DIOS!</p>
+        <p style="font-size:20px;">Puntuación Legendaria: <span id="puntosFinales" style="color:#e94560"></span></p>
+        <button onclick="location.reload()" style="background:#000; color:#fff; margin-top:30px;">SALIR TRIUNFANTE</button>
+    </div>
+</div>
+
+<script>
+let puntos = 0, vidas = 3, tiempo = 60, combo = 1, dificultad = "";
+let juegoActivo = false, pausado = false, estaMirando = false, estaCopiando = false, sospecha = 0;
+let ptsPorTick = 0, subidaBase = 0;
+let ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+function sonar(f, t, v) {
+    let osc = ctx.createOscillator();
+    let g = ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination);
+    osc.frequency.value = f; g.gain.setValueAtTime(v, ctx.currentTime);
+    osc.start(); g.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + t);
+    osc.stop(ctx.currentTime + t);
+}
+
+function setDificultad(d, btn) {
+    dificultad = d;
+    if (d === 'facil') { ptsPorTick = 1.5; subidaBase = 0.5; }
+    else if (d === 'medio') { ptsPorTick = 3.5; subidaBase = 1.2; }
+    else if (d === 'dificil') { ptsPorTick = 8; subidaBase = 2.4; }
+
+    document.querySelectorAll('.dificultad').forEach(b => b.classList.remove('seleccionado'));
+    btn.classList.add('seleccionado');
+    document.getElementById('btnPlay').style.display = 'block';
+    sonar(440, 0.1, 0.1);
+}
+
+function iniciarJuego() {
+    juegoActivo = true;
+    document.getElementById('pantallaInicio').style.display = 'none';
+    document.getElementById('controlesActivos').style.display = 'flex';
+    document.getElementById('contenedorSospecha').style.display = 'block';
+    bucle();
+    setInterval(() => {
+        if(juegoActivo && !pausado) {
+            tiempo--;
+            document.getElementById('tiempo').innerText = tiempo;
+            if(tiempo <= 0) finalizar();
+        }
+    }, 1000);
+}
+
+function togglePausa() {
+    pausado = !pausado;
+    document.getElementById('pausaBtn').innerText = pausado ? "PLAY" : "PAUSA";
+    sonar(200, 0.1, 0.1);
+}
+
+function bucle() {
+    if(!juegoActivo) return;
+    if(!pausado) {
+        if(!estaMirando) {
+            // Dificultad aumenta levemente con el tiempo
+            let factorTiempo = 1 + (60 - tiempo) / 100;
+            sospecha += Math.random() * (subidaBase * factorTiempo);
+            if(sospecha >= 100) girarProfe();
+        }
+
+        const barra = document.getElementById('barraSospecha');
+        barra.style.width = sospecha + "%";
+        barra.style.background = sospecha > 80 ? "#ff0000" : sospecha > 40 ? "#ffaa00" : "#00ff00";
+
+        if(estaCopiando) {
+            if(estaMirando) pillado();
+            else {
+                puntos += (ptsPorTick * combo);
+                if(Math.floor(puntos) % 100 === 0) { combo++; sonar(880, 0.05, 0.05); }
+                actualizarUI();
+            }
+        }
+    }
+    setTimeout(bucle, 100);
+}
+
+function girarProfe() {
+    estaMirando = true;
+    sonar(150, 0.3, 0.2);
+    document.getElementById('profe').classList.add('mirando');
+    let tMiro = dificultad === 'facil' ? 1200 : 2200;
+    setTimeout(() => {
+        if(!pausado) {
+            document.getElementById('profe').classList.remove('mirando');
+            estaMirando = false;
+            sospecha = 0;
+        }
+    }, tMiro);
+}
+
+function empezarCopiar() { if(juegoActivo && !pausado) { estaCopiando = true; document.getElementById('chuleta').style.display = 'block'; } }
+function pararCopiar() { estaCopiando = false; document.getElementById('chuleta').style.display = 'none'; }
+
+function pillado() {
+    vidas--;
+    sospecha = 0;
+    estaCopiando = false;
+    sonar(100, 0.5, 0.3);
+    document.getElementById('vidas').innerText = vidas;
+    document.getElementById('chuleta').style.display = 'none';
+    if(vidas <= 0) finalizar();
+}
+
+function actualizarUI() {
+    document.getElementById('puntos').innerText = Math.floor(puntos);
+    document.getElementById('combo').innerText = "x" + combo;
+    let r = puntos > 500 ? "DIOS" : puntos > 250 ? "PRO" : "NOVATO";
+    document.getElementById('rango').innerText = r;
+}
+
+function finalizar() {
+    juegoActivo = false;
+    if(puntos >= 500 && dificultad === 'dificil' && vidas > 0) {
+        document.getElementById('diploma').style.display = 'flex';
+        document.getElementById('puntosFinales').innerText = Math.floor(puntos);
+    } else {
+        sonar(50, 1, 0.3);
+        alert("EXAMEN TERMINADO\nPuntos: " + Math.floor(puntos));
+        location.reload();
+    }
+}
+
+window.onkeydown = (e) => { if(e.code === "Space") { e.preventDefault(); empezarCopiar(); } };
+window.onkeyup = (e) => { if(e.code === "Space") pararCopiar(); };
+</script>
+</body>
+</html>
